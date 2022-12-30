@@ -27,79 +27,74 @@ const LoginForm = () => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
 
-  const handleSubmit = async (e) => {
-    console.log(email, password)
-
-    const response = await loginUser({
-      email,
-      password
-    })
-
-    let timerInterval;
-
-    if (response.message === "success") {
-
-      Swal.fire({
-        title: 'Checking Email and Password',
-        html: 'Wait! Loading...',
-        timer: 2000,
-        timerProgressBar: true,
-        didOpen: () => {
-          Swal.showLoading()
-          const b = Swal.getHtmlContainer().querySelector('b')
-          timerInterval = setInterval(() => {
-            b.textContent = Swal.getTimerLeft()
-          }, 100)
-        },
-        willClose: () => {
-          clearInterval(timerInterval)
-        }
-      }).then((result) => {
-        if (result.dismiss === Swal.DismissReason.timer) {
-          console.log('I was closed by the timer')
-          Swal.fire('Log In Success', response.message, 'success')
-        }
-      })
-
-        .then((value) => {
-          localStorage.setItem('Token', response.data.Token);
-          localStorage.setItem('user', JSON.stringify(response.data.name));
-          window.location.href = "https://unikrew.com/";
-        });
-    } else {
-      console.log(response);
-      Swal.fire({
-        title: 'Checking Email and Password',
-        html: 'Wait! Loading...',
-        timer: 2000,
-        timerProgressBar: true,
-        didOpen: () => {
-          Swal.showLoading()
-          const b = Swal.getHtmlContainer().querySelector('b')
-          timerInterval = setInterval(() => {
-            b.textContent = Swal.getTimerLeft()
-          }, 100)
-        },
-        willClose: () => {
-          clearInterval(timerInterval)
-        }
-      }).then((result) => {
-        if (result.dismiss === Swal.DismissReason.timer) {
-          console.log('I was closed by the timer')
-          Swal.fire('Log In Failed', response.message, 'error')
-        }
-      })
-    }
-  }
   const formik = useFormik({
     initialValues: {
       emailAddress: "",
       password: "",
     },
-    onSubmit: (e) => {
+    onSubmit: async (e) => {
       setEmail(e.emailAddress)
       setPassword(e.password)
-      handleSubmit();
+      const response = await loginUser({
+        email,
+        password
+      })
+  
+      let timerInterval;
+  
+      if (response.message === "success") {
+  
+        Swal.fire({
+          title: 'Checking Email and Password',
+          html: 'Wait! Loading...',
+          timer: 2000,
+          timerProgressBar: true,
+          didOpen: () => {
+            Swal.showLoading()
+            const b = Swal.getHtmlContainer().querySelector('b')
+            timerInterval = setInterval(() => {
+              b.textContent = Swal.getTimerLeft()
+            }, 100)
+          },
+          willClose: () => {
+            clearInterval(timerInterval)
+          }
+        }).then((result) => {
+          if (result.dismiss === Swal.DismissReason.timer) {
+            console.log('I was closed by the timer')
+            Swal.fire('Log In Success', response.message, 'success')
+          }
+        })
+  
+          .then((value) => {
+            localStorage.setItem('Token', response.data.Token);
+            localStorage.setItem('user', JSON.stringify(response.data.name));
+            window.location.href = "https://unikrew.com/";
+          });
+      } else {
+        console.log(response);
+        Swal.fire({
+          title: 'Checking Email and Password',
+          html: 'Wait! Loading...',
+          timer: 2000,
+          timerProgressBar: true,
+          didOpen: () => {
+            Swal.showLoading()
+            const b = Swal.getHtmlContainer().querySelector('b')
+            timerInterval = setInterval(() => {
+              b.textContent = Swal.getTimerLeft()
+            }, 100)
+          },
+          willClose: () => {
+            clearInterval(timerInterval)
+          }
+        }).then((result) => {
+          if (result.dismiss === Swal.DismissReason.timer) {
+            console.log('I was closed by the timer')
+            Swal.fire('Log In Failed', response.message, 'error')
+          }
+        })
+      }
     },
     validationSchema: validationSchemaOne
   });
